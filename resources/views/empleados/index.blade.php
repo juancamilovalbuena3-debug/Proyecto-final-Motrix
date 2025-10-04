@@ -4,6 +4,12 @@
             {{ __('Empleados') }}
         </h2>
     </x-slot>
+    <!-- Fondo global con la imagen del carro -->
+    <div class="py-12 bg-cover bg-center min-h-screen" style="background-image: url('{{ asset('images/turbo.jpg') }}');">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Caja semi-transparente para que se vea el fondo -->
+            <div class="bg-white/80 overflow-hidden shadow-xl sm:rounded-lg flex">
+                
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -68,17 +74,18 @@
                             </button>
                         </form>
                     </div>
+
                     {{-- Botones de exportación --}}
-<div class="mb-6 flex gap-3">
-    <a href="{{ route('empleados.export.pdf') }}"
-       class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
-        📄 Exportar PDF
-    </a>
-    <a href="{{ route('empleados.export.csv') }}"
-       class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
-        📊 Exportar CSV
-    </a>
-</div>
+                    <div class="mb-6 flex gap-3">
+                        <a href="{{ route('empleados.export.pdf', ['busqueda' => request('busqueda')]) }}"
+                           class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
+                            📄 Exportar PDF
+                        </a>
+                        <a href="{{ route('empleados.export.csv', ['busqueda' => request('busqueda')]) }}"
+                           class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+                            📊 Exportar CSV
+                        </a>
+                    </div>
 
                     {{-- Lista de empleados --}}
                     <div class="overflow-x-auto">

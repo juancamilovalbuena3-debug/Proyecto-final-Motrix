@@ -90,11 +90,19 @@ class EmpleadoController extends Controller
     }
 
     /**
-     * Exportar empleados en PDF (con logo y fecha)
+     * Exportar empleados en PDF (respetando filtros)
      */
-    public function exportPdf()
+    public function exportPdf(Request $request)
     {
-        $empleados = Empleado::all();
+        $query = Empleado::query();
+
+        if ($request->filled('busqueda')) {
+            $busqueda = trim($request->busqueda);
+            $query->whereRaw('LOWER(nombre) = ?', [strtolower($busqueda)])
+                  ->orWhereRaw('LOWER(email) = ?', [strtolower($busqueda)]);
+        }
+
+        $empleados = $query->get();
         $fecha = now()->format('d/m/Y H:i');
 
         $pdf = Pdf::loadView('empleados.pdf', compact('empleados', 'fecha'));
@@ -102,11 +110,19 @@ class EmpleadoController extends Controller
     }
 
     /**
-     * Exportar empleados en CSV
+     * Exportar empleados en CSV (respetando filtros)
      */
-    public function exportCsv()
+    public function exportCsv(Request $request)
     {
-        $empleados = Empleado::all();
+        $query = Empleado::query();
+
+        if ($request->filled('busqueda')) {
+            $busqueda = trim($request->busqueda);
+            $query->whereRaw('LOWER(nombre) = ?', [strtolower($busqueda)])
+                  ->orWhereRaw('LOWER(email) = ?', [strtolower($busqueda)]);
+        }
+
+        $empleados = $query->get();
 
         $response = new StreamedResponse(function () use ($empleados) {
             $handle = fopen('php://output', 'w');

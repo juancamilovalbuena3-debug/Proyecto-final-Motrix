@@ -4,6 +4,11 @@
             {{ __('Configuración ⚙️') }}
         </h2>
     </x-slot>
+    <!-- Fondo global con la imagen del carro -->
+    <div class="py-12 bg-cover bg-center min-h-screen" style="background-image: url('{{ asset('images/configuracion.jpg') }}');">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Caja semi-transparente para que se vea el fondo -->
+            <div class="bg-white/80 overflow-hidden shadow-xl sm:rounded-lg flex">
 
     <div class="p-6 space-y-6">
         <div class="border p-4 rounded bg-white shadow">
