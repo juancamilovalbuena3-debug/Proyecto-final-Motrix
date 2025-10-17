@@ -16,34 +16,50 @@ Route::middleware([
     'verified',
 ])->group(function () {
 
-    // Dashboard
+    /* ========================
+       🏠 DASHBOARD
+    ========================= */
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // CRUD Empleados
+    /* ========================
+       👨‍💼 EMPLEADOS
+    ========================= */
     Route::resource('empleados', EmpleadoController::class);
     Route::get('/empleados/export/pdf', [EmpleadoController::class, 'exportPdf'])->name('empleados.export.pdf');
     Route::get('/empleados/export/csv', [EmpleadoController::class, 'exportCsv'])->name('empleados.export.csv');
 
-    // Listado completo de Vehículos con búsqueda
+    /* ========================
+       🚗 VEHÍCULOS
+    ========================= */
+
+    // Listado general con búsqueda y filtros
     Route::get('/vehiculos', [VehiculoController::class, 'index'])->name('vehiculos.index');
 
-    // Carros
-    Route::get('/carros', [VehiculoController::class, 'carros'])->name('carros');
-    // Motos
-    Route::get('/motos', [VehiculoController::class, 'motos'])->name('motos');
+    // Crear vehículo (desde dashboard o formulario)
+    Route::get('/vehiculos/create', [VehiculoController::class, 'create'])->name('vehiculos.create');
+    Route::post('/vehiculos', [VehiculoController::class, 'store'])->name('vehiculos.store');
 
-    // Vender vehículo
-    Route::get('/vender', [VehiculoController::class, 'create'])->name('vender');
-    Route::post('/vender', [VehiculoController::class, 'store'])->name('vender.store');
+    // Editar / Actualizar / Eliminar
     Route::get('/vehiculos/{id}/edit', [VehiculoController::class, 'edit'])->name('vehiculos.edit');
     Route::put('/vehiculos/{id}', [VehiculoController::class, 'update'])->name('vehiculos.update');
     Route::delete('/vehiculos/{id}', [VehiculoController::class, 'destroy'])->name('vehiculos.destroy');
 
-    // Exportaciones Vehículos (PDF y CSV filtrados con el mismo parámetro)
+    // Exportaciones PDF / CSV
     Route::get('/vehiculos/export/pdf', [VehiculoController::class, 'exportPdf'])->name('vehiculos.export.pdf');
     Route::get('/vehiculos/export/csv', [VehiculoController::class, 'exportCsv'])->name('vehiculos.export.csv');
 
-    // Configuración
+    // Secciones separadas
+    Route::get('/carros', [VehiculoController::class, 'carros'])->name('carros');
+    Route::get('/motos', [VehiculoController::class, 'motos'])->name('motos');
+
+    /* ========================
+       💰 VENDER VEHÍCULO
+    ========================= */
+    Route::get('/vender', [VehiculoController::class, 'create'])->name('vender');
+    Route::post('/vender', [VehiculoController::class, 'store'])->name('vender.store');
+
+    /* ========================
+       ⚙️ CONFIGURACIÓN
+    ========================= */
     Route::get('/configuracion', [ConfiguracionController::class, 'index'])->name('configuracion');
-    
 });

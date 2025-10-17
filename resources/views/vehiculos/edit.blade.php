@@ -70,11 +70,11 @@
             <!-- Botones -->
             <div class="flex space-x-4">
                 <button type="submit"
-                        class="bg-gray-600 hover:bg-gray-700 text-black font-bold px-5 py-2 rounded-lg shadow-md transition">
+                        class="bg-white hover:bg-gray-200 text-black font-semibold px-4 py-2 rounded flex-1 border">
                     Actualizar
                 </button>
                 <a href="{{ route('dashboard') }}"
-                   class="bg-gray-500 hover:bg-gray-600 text-black font-bold px-5 py-2 rounded-lg shadow-md transition inline-block text-center">
+                   class="bg-white hover:bg-gray-200 text-black font-semibold px-4 py-2 rounded flex-1 border">
                    Cancelar
                 </a>
             </div>

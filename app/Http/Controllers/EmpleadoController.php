@@ -4,30 +4,45 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Empleado;
+use App\Models\Vehiculo;
 use Barryvdh\DomPDF\Facade\Pdf; // Para PDF
 use Symfony\Component\HttpFoundation\StreamedResponse; // Para CSV
 
 class EmpleadoController extends Controller
 {
     /**
-     * Muestra la lista de empleados
+     * Muestra la lista de empleados y vehículos
      */
     public function index(Request $request)
     {
-        $query = Empleado::query();
+        // === Empleados ===
+        $queryEmpleados = Empleado::query();
 
         if ($request->filled('busqueda')) {
             $busqueda = trim($request->busqueda);
 
-            // Búsqueda exacta por nombre o email (insensible a mayúsculas/minúsculas)
-            $query->whereRaw('LOWER(nombre) = ?', [strtolower($busqueda)])
-                  ->orWhereRaw('LOWER(email) = ?', [strtolower($busqueda)]);
+            // Búsqueda parcial (no exacta)
+            $queryEmpleados->where(function ($q) use ($busqueda) {
+                $q->where('nombre', 'like', '%' . strtolower($busqueda) . '%')
+                  ->orWhere('email', 'like', '%' . strtolower($busqueda) . '%');
+            });
         }
 
-        $empleados = $query->get();
+        $empleados = $queryEmpleados->paginate(10)->withQueryString();
 
-        return view('empleados.index', compact('empleados'))
-               ->with('busqueda', $request->busqueda);
+        // === Vehículos === (solo se muestran en la tabla, sin filtrar empleados)
+        $vehiculos = Vehiculo::paginate(10);
+
+        return view('empleados.index', compact('empleados', 'vehiculos'))
+                ->with('busqueda', $request->busqueda);
+    }
+
+    /**
+     * Mostrar formulario para crear un nuevo empleado
+     */
+    public function create()
+    {
+        return view('empleados.create');
     }
 
     /**
@@ -98,15 +113,21 @@ class EmpleadoController extends Controller
 
         if ($request->filled('busqueda')) {
             $busqueda = trim($request->busqueda);
-            $query->whereRaw('LOWER(nombre) = ?', [strtolower($busqueda)])
-                  ->orWhereRaw('LOWER(email) = ?', [strtolower($busqueda)]);
+
+            $query->where(function ($q) use ($busqueda) {
+                $q->where('nombre', 'like', '%' . strtolower($busqueda) . '%')
+                  ->orWhere('email', 'like', '%' . strtolower($busqueda) . '%');
+            });
         }
 
         $empleados = $query->get();
         $fecha = now()->format('d/m/Y H:i');
 
-        $pdf = Pdf::loadView('empleados.pdf', compact('empleados', 'fecha'));
-        return $pdf->download('empleados.pdf');
+        $pdf = Pdf::loadView('empleados.pdf', compact('empleados', 'fecha'))
+                  ->setPaper('a4', 'landscape');
+
+        $filename = 'empleados_' . now()->format('Ymd_His') . '.pdf';
+        return $pdf->download($filename);
     }
 
     /**
@@ -118,18 +139,19 @@ class EmpleadoController extends Controller
 
         if ($request->filled('busqueda')) {
             $busqueda = trim($request->busqueda);
-            $query->whereRaw('LOWER(nombre) = ?', [strtolower($busqueda)])
-                  ->orWhereRaw('LOWER(email) = ?', [strtolower($busqueda)]);
+
+            $query->where(function ($q) use ($busqueda) {
+                $q->where('nombre', 'like', '%' . strtolower($busqueda) . '%')
+                  ->orWhere('email', 'like', '%' . strtolower($busqueda) . '%');
+            });
         }
 
         $empleados = $query->get();
 
         $response = new StreamedResponse(function () use ($empleados) {
             $handle = fopen('php://output', 'w');
-            // Cabeceras del CSV
             fputcsv($handle, ['ID', 'Nombre', 'Puesto', 'Salario', 'Email']);
 
-            // Filas
             foreach ($empleados as $empleado) {
                 fputcsv($handle, [
                     $empleado->id,
@@ -139,11 +161,13 @@ class EmpleadoController extends Controller
                     $empleado->email,
                 ]);
             }
+
             fclose($handle);
         });
 
+        $filename = 'empleados_' . now()->format('Ymd_His') . '.csv';
         $response->headers->set('Content-Type', 'text/csv');
-        $response->headers->set('Content-Disposition', 'attachment; filename="empleados.csv"');
+        $response->headers->set('Content-Disposition', 'attachment; filename="' . $filename . '"');
 
         return $response;
     }

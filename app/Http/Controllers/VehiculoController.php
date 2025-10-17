@@ -53,7 +53,7 @@ class VehiculoController extends Controller
 
         $vehiculo->save();
 
-        return redirect()->route('dashboard')->with('success', 'Vehículo publicado con éxito 🚗🏍️');
+        return redirect()->route('vehiculos.index')->with('success', 'Vehículo publicado con éxito 🚗🏍️');
     }
 
     // Mostrar formulario para editar un vehículo
@@ -95,7 +95,7 @@ class VehiculoController extends Controller
 
         $vehiculo->save();
 
-        return redirect()->route('dashboard')->with('success', 'Vehículo actualizado correctamente.');
+        return redirect()->route('vehiculos.index')->with('success', 'Vehículo actualizado correctamente.');
     }
 
     // Eliminar vehículo
@@ -110,50 +110,78 @@ class VehiculoController extends Controller
 
         $vehiculo->delete();
 
-        return redirect()->route('dashboard')->with('success', 'Vehículo eliminado correctamente.');
+        return redirect()->route('vehiculos.index')->with('success', 'Vehículo eliminado correctamente.');
     }
 
-    // Listado de vehículos con filtros
+    // ✅ Listado de vehículos con búsqueda que se mantiene en la misma vista
     public function index(Request $request)
     {
         $query = Vehiculo::query();
 
-        if ($request->filled('marca')) {
-            $query->where('marca', 'like', '%' . $request->marca . '%');
-        }
-        if ($request->filled('modelo')) {
-            $query->where('modelo', 'like', '%' . $request->modelo . '%');
+        if ($request->filled('busqueda')) {
+            $busqueda = $request->busqueda;
+            $query->where(function($q) use ($busqueda) {
+                $q->where('marca', 'like', "%$busqueda%")
+                  ->orWhere('modelo', 'like', "%$busqueda%");
+            });
         }
 
-        $vehiculos = $query->get();
+        if ($request->filled('tipo')) {
+            $query->where('tipo', $request->tipo);
+        }
 
-        return view('dashboard', compact('vehiculos'));
+        $vehiculos = $query->paginate(10);
+
+        return view('vehiculos.index', compact('vehiculos'));
     }
 
-    // Exportar PDF
+    // ✅ Exportar PDF (solo vehículos filtrados)
     public function exportPdf(Request $request)
     {
         $query = Vehiculo::query();
-        if ($request->filled('marca')) $query->where('marca', 'like', '%' . $request->marca . '%');
-        if ($request->filled('modelo')) $query->where('modelo', 'like', '%' . $request->modelo . '%');
+
+        if ($request->filled('busqueda')) {
+            $busqueda = $request->busqueda;
+            $query->where(function($q) use ($busqueda) {
+                $q->where('marca', 'like', "%$busqueda%")
+                  ->orWhere('modelo', 'like', "%$busqueda%");
+            });
+        }
+
+        if ($request->filled('tipo')) {
+            $query->where('tipo', $request->tipo);
+        }
 
         $vehiculos = $query->get();
 
         $pdf = PDF::loadView('vehiculos.pdf', compact('vehiculos'));
-        return $pdf->download('vehiculos.pdf');
+        return $pdf->download('vehiculos_filtrados.pdf');
     }
 
-    // Exportar CSV
+    // ✅ Exportar CSV (solo vehículos filtrados)
     public function exportCsv(Request $request)
     {
         $query = Vehiculo::query();
-        if ($request->filled('marca')) $query->where('marca', 'like', '%' . $request->marca . '%');
-        if ($request->filled('modelo')) $query->where('modelo', 'like', '%' . $request->modelo . '%');
+
+        if ($request->filled('busqueda')) {
+            $busqueda = $request->busqueda;
+            $query->where(function($q) use ($busqueda) {
+                $q->where('marca', 'like', "%$busqueda%")
+                  ->orWhere('modelo', 'like', "%$busqueda%");
+            });
+        }
+
+        if ($request->filled('tipo')) {
+            $query->where('tipo', $request->tipo);
+        }
 
         $vehiculos = $query->get();
 
-        $filename = 'vehiculos.csv';
-        $headers = ['Content-Type' => 'text/csv', 'Content-Disposition' => "attachment; filename=\"$filename\""];
+        $filename = 'vehiculos_filtrados.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\""
+        ];
 
         $callback = function() use ($vehiculos) {
             $file = fopen('php://output', 'w');

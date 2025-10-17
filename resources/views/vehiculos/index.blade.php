@@ -37,11 +37,11 @@
                         <input type="text" name="busqueda" value="{{ request('busqueda') }}"
                                placeholder="Buscar por marca, modelo o placa..."
                                class="border p-2 rounded w-1/2">
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                        <button type="submit" class="bg-white text-black border font-semibold px-6 py-3 rounded-lg text-lg shadow-md transition-all duration-300 transform hover:scale-105 hover:bg-gray-200">
                             🔍 Buscar
                         </button>
                         <a href="{{ route('vehiculos.index') }}"
-                           class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
+                           class="bg-white text-black border font-semibold px-6 py-3 rounded-lg text-lg shadow-md transition-all duration-300 transform hover:scale-105 hover:bg-gray-200">
                             ✖ Limpiar
                         </a>
                     </form>
@@ -53,29 +53,14 @@
                             "<em>{{ request('busqueda') }}</em>".
                         </div>
                     @endif
-
-                    {{-- Formulario para agregar vehículo --}}
-                    <div class="mb-6">
-                        <form action="{{ route('vehiculos.store') }}" method="POST" class="flex gap-2">
-                            @csrf
-                            <input type="text" name="marca" placeholder="Marca" class="border p-2 rounded" required>
-                            <input type="text" name="modelo" placeholder="Modelo" class="border p-2 rounded" required>
-                            <input type="text" name="placa" placeholder="Placa" class="border p-2 rounded" required>
-                            <input type="number" step="0.01" name="precio" placeholder="Precio" class="border p-2 rounded" required>
-                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
-                                ➕ Agregar
-                            </button>
-                        </form>
-                    </div>
-
                     {{-- Botones de exportación --}}
                     <div class="mb-6 flex gap-3">
                         <a href="{{ route('vehiculos.export.pdf', ['busqueda' => request('busqueda')]) }}"
-                           class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
+                           class="bg-white text-black border font-semibold px-6 py-3 rounded-lg text-lg shadow-md transition-all duration-300 transform hover:scale-105 hover:bg-gray-200">
                             📄 Exportar PDF
                         </a>
                         <a href="{{ route('vehiculos.export.csv', ['busqueda' => request('busqueda')]) }}"
-                           class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+                           class="bg-white text-black border font-semibold px-6 py-3 rounded-lg text-lg shadow-md transition-all duration-300 transform hover:scale-105 hover:bg-gray-200">
                             📊 Exportar CSV
                         </a>
                     </div>
@@ -88,7 +73,6 @@
                                     <th class="px-4 py-2 border">ID</th>
                                     <th class="px-4 py-2 border">Marca</th>
                                     <th class="px-4 py-2 border">Modelo</th>
-                                    <th class="px-4 py-2 border">Placa</th>
                                     <th class="px-4 py-2 border">Precio</th>
                                     <th class="px-4 py-2 border">Acciones</th>
                                 </tr>
@@ -99,12 +83,11 @@
                                         <td class="px-4 py-2 border">{{ $vehiculo->id }}</td>
                                         <td class="px-4 py-2 border">{{ $vehiculo->marca }}</td>
                                         <td class="px-4 py-2 border">{{ $vehiculo->modelo }}</td>
-                                        <td class="px-4 py-2 border">{{ $vehiculo->placa }}</td>
                                         <td class="px-4 py-2 border">{{ $vehiculo->precio }}</td>
                                         <td class="px-4 py-2 border flex gap-2">
                                             {{-- Editar --}}
                                             <a href="{{ route('vehiculos.edit', $vehiculo->id) }}"
-                                               class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">
+                                               class="bg-white text-black border font-semibold px-6 py-3 rounded-lg text-lg shadow-md transition-all duration-300 transform hover:scale-105 hover:bg-gray-200">
                                                 ✏️
                                             </a>
                                             {{-- Eliminar --}}
@@ -112,8 +95,8 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit"
-                                                        class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
-                                                        onclick="return confirm('¿Seguro que quieres eliminar este vehículo?')">
+                                                        class="bg-white text-black border font-semibold px-6 py-3 rounded-lg text-lg shadow-md transition-all duration-300 transform hover:scale-105 hover:bg-gray-200">
+                
                                                     🗑️
                                                 </button>
                                             </form>

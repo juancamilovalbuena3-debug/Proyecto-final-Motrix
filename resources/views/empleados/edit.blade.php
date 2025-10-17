@@ -58,10 +58,10 @@
 
                     {{-- ✅ Botones de acción --}}
                     <div class="flex justify-end gap-3 mt-4">
-                        <a href="{{ route('empleados.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+                        <a href="{{ route('empleados.index') }}" class="bg-white hover:bg-gray-200 text-black font-semibold px-4 py-2 rounded flex-1 border">
                             Cancelar
                         </a>
-                        <button type="submit" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+                        <button type="submit" class="bg-white hover:bg-gray-200 text-black font-semibold px-4 py-2 rounded flex-1 border">
                             Guardar cambios
                         </button>
                     </div>
